@@ -126,4 +126,16 @@ public class CheckoutBlackBoxSample {
         assertFalse(patron.hasBookCheckedOut(book.getIsbn()),
                 "Patron should NOT have book in list for " + checkoutClass.getSimpleName());
     }
+    @ParameterizedTest
+    @MethodSource("checkoutClassProvider")
+    @DisplayName("T4: Null book returns 2.1")
+    public void testNullBook(Class<? extends Checkout> checkoutClass) throws Exception {
+        checkout = createCheckout(checkoutClass);
+        Patron patron = new Patron("P001", "Test Patron",
+                "test@example.com", Patron.PatronType.STUDENT);
+
+        checkout.registerPatron(patron);
+        double result = checkout.checkoutBook(null, patron);
+        assertEquals(2.1, result, 0.01);
+    }
 }
