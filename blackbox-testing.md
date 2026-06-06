@@ -65,7 +65,7 @@ Do **not** put everything into one table.
 | Partition ID | State                  | Valid/Invalid | Input Condition                      | Expected Return      | Expected Behavior              |
 |--------------|------------------------|---------------|--------------------------------------|----------------------|--------------------------------|
 | EP 4.1       | Below Limit            | Valid         | checkoutCount < maxLimit             | condition validation | Checkout may Proceed           |
-| EP 4.2       | At the limit           | Invalid       | checkoutCount >= 0 maxLimit          | 3.2                  | No checkout                    |
+| EP 4.2       | At the limit           | Invalid       | checkoutCount >= maxLimit          | 3.2                  | No checkout                    |
 | EP 4.3       | Near the limit warning | Valid         | Within 2 of max limit after checkout | 1.1                  | Checkout succeeds with warning |
 ---
 ## Part 2: Boundary Value Analysis (BVA)
@@ -137,78 +137,91 @@ At least some of your tests should verify observable state changes, not just ret
 **Checkout0-3 Columns:** Mark each implementation as Pass (✓) or Fail (✗) for this test case. This helps you track which implementations have bugs and will be useful for Part 4 analysis.
 
 | Test ID Name                 | EP/BVA         | Input Description                             | Expected Return | Expected State Changes                          | Checkout0 | Checkout1 | Checkout2 | Checkout3 |
-|------------------------------|----------------|-----------------------------------------------|-----------------|-------------------------------------------------|-----------|-----------|-----------|-----------|
-| T1 testNormalcheckout        | EP 1.1, EP 2.1 | Available book, eligible patron, below limits | 0.0             | Patron gains book, abailableCopies decrease by 1 | ✓ | ✓ | ✗ | ✓ |
-| T2 testRenewal               | EP 3.2         | Patron already has book checked out           | 0.1             | due date changed                                | ✗ | ✗ | ✓ | ✓ |
-| T3 testUnavailableBook       | EP 1.2         | Book has 0 available copies                   | 2.0             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T4 testNullBook              | EP 1.3         | Book is null                                  | 2.1             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T5 testReferenceBook         | EP 1.4         | Reference-only book                           | 5.0             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T6 testNullPatron            | EP 2.2         | Patron is null                                | 3.1             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T7 testSuspednedPatron       | EP 2.3         | Suspended patron                              | 3.0             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T8 testOverdueLimit          | EP 2.4         | Patron has 3 overdue books                    | 4.0             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T9 testFineThreshold         | EP 2.5         | Patron owes $10.00                            | 4.1             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T10 testCheckoutLimitReached | EP 4.2         | Patron at max limit                           | 3.2             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T11 testFineBelowThreshold   | BVA 2.1        | Fine = 9.99                                   | Success         | Checkout proceeds                               | ✓ | ✓ | ✗ | ✓ |
-| T12 testFineAboveThreshold   | BVA 2.3        | Fine = 10.01                                  | 4.1             | No state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T13 TestOverdueBelowBoundary | BVA 1.1        | Overdue count = 2                             | Success         | Checkout proceeds                               | ✓ | ✓ | ✗ | ✓ |
-| T14 testOverdueAboveBoundary | BVA 1.3        | Overdue count == 4                            | 4.0             | no state change                                 | ✓ | ✓ | ✗ | ✓ |
-| T15 testStudentLimit8        | BVA 3.1        | Student == 8 books                            | 1.1             | checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-| T16 testStudentLimit9        | BVA 3.2        | Student == 9 books                            | 1.1             | checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-| T17 testChildLimit1          | BVA 4.1        | Child has 1 books                             | 1.1             | Checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-| T18 testChildLimit2          | BVA 4.2        | Child has 2 books                             | 1.1             | Checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-| T19 testFacultyWarning18     | BVA 4.3        | Faculty has 18 books                          | 1.1             | Checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-| T17 testStaffWarning13       | BVA 4.3        | Faculty has 13 books                          | 1.1             | Checkout succeeds                               | ✓ | ✓ | ✗ | ✓ |
-
-(Add rows until you have at least 20.)
-
+|------------------------------|----------------|-----------------------------------------------|----------------|-------------------------------------------------|-|-|-|-|
+| T1 testBookAvailable         | EP 1.1, EP 2.1 | Available book, eligible patron,  | 0.0            | Patron gains book, abailableCopies decrease by 1 | ✓ | ✓ | ✗ | ✓ |
+| T2 testRenewal               | EP 3.2         | Patron already has book checked out           | 0.1            | due date changed                                | ✗ | ✗ | ✓ | ✓ |
+| T3 testUnavailableBook       | EP 1.2         | Book has 0 available copies                   | 2.0            | No state change                                 | ✓ | ✓ | ✗ | ✓ |
+| T4 testNullBook              | EP 1.3         | Book is null                                  | 2.1            | No state change                                 |✓ | ✓ | ✓ | ✓ |
+| T5 testReferenceBook         | EP 1.4         | Reference-only book                           | 5.0            | No state change                                 | ✗ | ✓ | ✓ | ✓ |
+| T6 testNullPatron            | EP 2.2         | Patron is null                                | 3.1            | No state change                                 | ✓ | ✓ | ✓ | ✓ |
+| T7 testSuspednedPatron       | EP 2.3         | Suspended patron                              | 3.0            | No state change                                 | ✓ | ✓ | ✓ | ✓ |
+| T8 testOverdueLimit          | EP 2.4         | Patron has 3 overdue books                    | 4.0            | No state change                                 | ✓ | ✓ | ✗ | ✓ |
+| T9 testFineThreshold         | EP 2.5         | Patron owes $10.00                            | 4.1            | No state change                                 | | | | |
+| T10 testCheckoutLimitReached | EP 4.2         | Patron at max limit                           | 3.2            | No state change                                 | | | | |
+| T11 testFineBelowThreshold   | BVA 2.1        | Fine = 9.99                                   | Success        | Checkout proceeds                               | | | | |
+| T12 testFineAboveThreshold   | BVA 2.3        | Fine = 10.01                                  | 4.1            | No state change                                 | | | | |
+| T13 TestOverdueBelowBoundary | BVA 1.1        | Overdue count = 2                             | Success        | Checkout proceeds                               | | | | |
+| T14 testOverdueAboveBoundary | BVA 1.3        | Overdue count == 4                            | 4.0            | no state change                                 | | | | |
+| T15 testStudentLimit8        | BVA 3.1        | Student == 8 books                            | 1.1            | checkout succeeds                               | | | | |
+| T16 testStudentLimit9        | BVA 3.2        | Student == 9 books                            | 1.1            | checkout succeeds                               | | | | |
+| T17 testChildLimit1          | BVA 4.1        | Child has 1 books                             | 1.1            | Checkout succeeds                               | | | | |
+| T18 testChildLimit2          | BVA 4.2        | Child has 2 books                             | 1.1            | Checkout succeeds                               | | | | |
+| T19 testFacultyWarning18     | BVA 4.3        | Faculty has 18 books                          | 1.1            | Checkout succeeds                               | | | | |
+| T20 testStaffWarning13       | BVA 4.3        | Faculty has 13 books                          | 1.1            | Checkout succeeds                               | | | | |
 ---
 
 ## Part 4: Bug Analysis
 
 ### Easter Eggs Found
 List any easter egg messages you observed:
-- 
-- 
+- [EASTER EGG #19]: 'Availability testing finds the books that aren't there.'
+- [EASTER EGG #19]: 'Can't check out what isn't there.'
+- [EASTER EGG #19]: 'Good EP testing checks all partitions.'
+- [EASTER EGG #10.1]: 'Testing can show the presence of bugs,'
+- [EASTER EGG #19]: 'Testing the sad path matters.'
+ - [EASTER EGG #18]: 'Null checking: because null pointer exceptions are not fun.'
+ - [EASTER EGG #18]: 'Remember to test all the edge cases.'
+ - [EASTER EGG #18]: 'The best code is no code at all... but this isn't it.'
+ - [EASTER EGG #15.2]: '...xvFZjo5PgG0 (test renewal to complete!)'
+ - [EASTER EGG #10.1/3]: 'Testing can show the presence of bugs,'
+ - [EASTER EGG #17]: 'The happy path matters too.'
+- [EASTER EGG #10.1]: 'Testing can show the presence of bugs,'
+- [EASTER EGG #20]: 'These books stay home.'
+ - [EASTER EGG #20]: 'Reference materials: look but don't touch.'
+ - [EASTER EGG #20]: 'Stay in the library, book!'
+- [EASTER EGG #19]: 'Testing the sad path matters.'
+- [EASTER EGG #20]: 'Reference books are meant to be consulted, not carried home.'
 
 ### Implementation Results
 
 | Implementation | Bugs Found (count) |
-|----------------|---------------------|
-| Checkout0      | |
-| Checkout1      | |
-| Checkout2      | |
-| Checkout3      | |
+|----------------|--------------------|
+| Checkout0      | 2                  |
+| Checkout1      | 1                  |
+| Checkout2      | 1                  |
+| Checkout3      | 0                  |
 
 ### Bugs Discovered
 List distinct bugs you identified for each implementation. Each bug must cite at least one test case that revealed it.
 
 **Checkout0:**
-- Bug 1: [Brief description] — Revealed by: [Test ID]
+- Bug 1: [a successful checkout does not reduce book availability] — Revealed by: [Test T2]
+- Bug 2: [Reference books return 2.0 when it should be 5.0] — Revealed by: [Test T5]
 
 **Checkout1:**
-- Bug 1: [Brief description] — Revealed by: [Test ID]
+- Bug 1: [Successful checkout does not add a book to the patron checkout list] — Revealed by: [Test T2]
 
 **Checkout2:**
-- Bug 1: [Brief description] — Revealed by: [Test ID]
+- Bug 1: [unavailable books can be checked out] — Revealed by: [Test T1]
 
 **Checkout3:**
-- Bug 1: [Brief description] — Revealed by: [Test ID]
+- Bug 1: [NONE]
 
 ### Comparative Analysis
 Compare the four implementations:
-- Which bugs are most critical (cause the worst failures)?
-- Which implementation would you use if you had to choose?
-- Why? Justify your choice considering bug severity and frequency.
-
+- Which bugs are most critical (cause the worst failures)? : Checkout2 allowing unavailable books to check out since it ruins the library inventory. 
+- Which implementation would you use if you had to choose? : Checkout3
+- Why? Justify your choice considering bug severity and frequency. : This implementation contained no bugs which made it the most effective code implemented.
 ---
 
 ## Part 5: Reflection
 
 **Which testing technique was most effective for finding bugs?**
-
+- EP was the most effective becuase I was able to find the most bugs using this technique.
+- 
 **What was the most challenging aspect of this assignment?**
-
+- Writing the code and finding bugs without writing code. I am still iffy on identifying what could be wrong if I solely read code without running it.
 **How did you decide on your EP and BVA?**
-
+- Overlooking the javadoc for checkoutBook() and looked for the most used conditions. I then used BVA for boundaries testing such as the 10 dollar in fines. 
 **Describe one test where checking only the return value would NOT have been sufficient to detect a bug.**
-
+checkout test shows that Checkout1 had correct code, however it still failed to add the books to the patrons checkout list. 
