@@ -31,19 +31,19 @@ public class CheckoutBlackBoxSample {
      * Each test will run against ALL implementations.
      */
     @SuppressWarnings("unchecked")
-    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
-        return (Stream<Class<? extends Checkout>>) Stream.of(
-                Checkout0.class,
-                Checkout1.class,
-                Checkout2.class,
-                Checkout3.class
-        );
-    }
+    //static Stream<Class<? extends Checkout>> checkoutClassProvider() {
+     //   return (Stream<Class<? extends Checkout>>) Stream.of(
+     //           Checkout0.class,
+     //           Checkout1.class,
+     //           Checkout2.class,
+      //          Checkout3.class
+      //  );
+    //}
 
     // Uncomment when you implement the method in assign 3 and comment the above
-//    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
-//        return Stream.of(Checkout.class);
-//    }
+    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
+        return Stream.of(Checkout.class);
+    }
 
 
     /**
@@ -137,5 +137,69 @@ public class CheckoutBlackBoxSample {
         checkout.registerPatron(patron);
         double result = checkout.checkoutBook(null, patron);
         assertEquals(2.1, result, 0.01);
+    }
+    @ParameterizedTest
+    @MethodSource("checkoutClassProvider")
+    @DisplayName("T6: Null patron returns 3.1")
+    public void testNullPatron(Class<? extends Checkout> checkoutClass) throws Exception {
+        checkout = createCheckout(checkoutClass);
+
+        Book book = new Book("1234567890",
+                "Test Book",
+                "Author",
+                Book.BookType.FICTION,
+                1);
+
+        checkout.addBook(book);
+        double result = checkout.checkoutBook(book, null);
+        assertEquals(3.1, result, 0.01);
+    }
+    @ParameterizedTest
+    @MethodSource("checkoutClassProvider")
+    @DisplayName("T5: Reference book returns 5.0")
+    public void testReferenceBook(Class<? extends Checkout> checkoutClass) throws Exception {
+        checkout = createCheckout(checkoutClass);
+
+        Book book = new Book(
+                "1234567890",
+                "Reference",
+                "Author",
+                Book.BookType.REFERENCE,
+                1);
+
+        Patron patron = new Patron(
+                "P001",
+                "Student",
+                "test@test.com",
+                Patron.PatronType.STUDENT);
+
+        checkout.addBook(book);
+        checkout.registerPatron(patron);
+        double result = checkout.checkoutBook(book, patron);
+        assertEquals(5.0, result, 0.01);
+    }
+    @ParameterizedTest
+    @MethodSource("checkoutClassProvider")
+    @DisplayName("T7: Suspended patron returns 3.0")
+    public void testSuspendedPatron(Class<? extends Checkout> checkoutClass) throws Exception {
+        checkout = createCheckout(checkoutClass);
+
+        Book book = new Book(
+                "1234567890",
+                "Book",
+                "Author",
+                Book.BookType.FICTION,
+                1);
+        Patron patron = new Patron(
+                "P001",
+                "Student",
+                "test@test.com",
+                Patron.PatronType.STUDENT);
+
+        patron.setAccountSuspended(true);
+        checkout.addBook(book);
+        checkout.registerPatron(patron);
+        double result = checkout.checkoutBook(book, patron);
+        assertEquals(3.0, result, 0.01);
     }
 }
