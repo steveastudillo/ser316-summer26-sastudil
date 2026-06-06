@@ -1,7 +1,7 @@
 # Code Review Checklist
 
-**Reviewer Name:** [Your Name]
-**Date:** [Date]
+**Reviewer Name:** [Steve Astudillo]
+**Date:** [06/04/2026]
 **Branch:** Review
 
 ## Instructions
@@ -20,18 +20,18 @@ Review ALL source files (in main not test) in the project and identify defects u
 
 ## Defect Log
 
-| Defect ID | File | Line(s) | Category | Description | Severity |
-|-----------|------|---------|----------|-------------|----------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
-| 6 | | | | | |
-| 7 | | | | | |
-| 8 | | | | | |
-| 9 | | | | | |
-| 10 | | | | | |
+| Defect ID | File          | Line(s)             | Category | Description                                                                     | Severity |
+|-----------|---------------|---------------------|----------|---------------------------------------------------------------------------------|----------|
+| 1 | Checkout.java | checkoutBook()      | FD       | The method will return 0 and ignore anything else.                              | Critical |
+| 2 | Checkout.java | usPatronType()      | FD       | uses == instead of .equal(). May return inncorect results                       | High     |
+| 3 | Book.java     | returnBook()        | FD       | Can increase up to 100 copies. This will make counting imventory harder.        | High     |
+| 4 | Patron.java   | getLoanPeriodDays() | CS       | switch statement recommended. Easier to read and nicer to maintain readability. | Low      |
+| 5 | Patron.java   | addFine()           | MD       | Contains an empty else statemetn that needs to be removed.                      | Low      |
+| 6 | Checkout.java | 17                  |        | Empty // comment line. Provides no useful docuemntation.                        |          |
+| 7 |               |                     |          |                                                                                 |          |
+| 8 |               |                     |          |                                                                                 |          |
+| 9 |               |                     |          |                                                                                 |          |
+| 10 |               |                     |          |                                                                                 |          |
 
 **Severity Levels:**
 - **Critical**: Causes system failure, data corruption, or security issues
