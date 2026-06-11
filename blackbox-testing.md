@@ -225,3 +225,5 @@ Compare the four implementations:
 - Overlooking the javadoc for checkoutBook() and looked for the most used conditions. I then used BVA for boundaries testing such as the 10 dollar in fines. 
 **Describe one test where checking only the return value would NOT have been sufficient to detect a bug.**
 checkout test shows that Checkout1 had correct code, however it still failed to add the books to the patrons checkout list. 
+
+
