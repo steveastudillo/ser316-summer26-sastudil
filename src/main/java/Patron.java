@@ -69,9 +69,9 @@ public class Patron {
     public double getFineBalance() {
         return fines;
     }
-
+//SER316 TASK 2 SPOTBUGS FIX
     public Map<String, LocalDate> getCheckedOutBooks() {
-        return bookMap;
+        return new HashMap<>(bookMap);
     }
 
     public int getCheckoutCount() {
@@ -208,7 +208,11 @@ public class Patron {
         }
         return true;
     }
-
+    // SER316 TASK 2 SPOTBUGS FIX
+    @Override
+public int hashCode() {
+        return patronId.hashCode();
+}
 
     @Override
     public String toString() {
