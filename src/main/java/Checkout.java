@@ -388,19 +388,11 @@ public class Checkout {
             if (b == null) {
                 continue;
             }
-
-            // Check if book matches the requested type
-            if (b.getType() == type) {
-                // Nested condition: filter by availability if requested
-                if (onlyAvailable) {
-                    // Only count if book has available copies
-                    if (b.isAvailable()) {
-                        looped++;
-                    }
-                } else {
-                    // Count all books of this type regardless of availability
-                    looped++;
-                }
+            if (b.getType() != type) {
+                continue;
+            }
+            if (!onlyAvailable && b.isAvailable()) {
+                looped++;;
             }
         }
 
