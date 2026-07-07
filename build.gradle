@@ -10,6 +10,7 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'pmd'
     id 'application'
     id 'jacoco'
     id 'checkstyle'
@@ -85,11 +86,12 @@ if (project.hasProperty('staticAnalysis')) {
     }
 
     // add PMD config if desired maybe used in assign 6
-//    pmd {
-//        toolVersion = '6.52.0'
-//        ruleSets = []
-//        ignoreFailures = true
-//    }
+    pmd {
+        toolVersion = '6.52.0'
+        ruleSets = []
+        ruleSetFiles = files("config/pmd/pmd.xml")
+        ignoreFailures = true
+    }
 }
 
 // Checkstyle configuration (always available)
