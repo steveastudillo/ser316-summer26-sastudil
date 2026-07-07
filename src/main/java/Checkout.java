@@ -28,6 +28,10 @@ public class Checkout {
     private static final double LIMIT_WARNING = 1.1;
     private static final double REFERENCE_ONLY = 5.0;
 
+    private static final double FIRST_FINE_RATE = 0.25;
+    private static final double SECOND_FINE_RATE = 0.50;
+    private static final double THIRD_FINE_RATE = 1.0;
+
     private static final int SEVEN_DAYS = 7;
     private static final int FOURTEEN_DAYS = 14;
     private Map<String, Book> bookList; // ISBN -> Book
@@ -238,22 +242,22 @@ public class Checkout {
             return ELIGIBLE;
         }
 
-        double fine = ELIGIBLE;
+        double fine = 0.0;
 
         // First 7 days: $0.25/day
         int days1 = Math.min(numOfDays, SEVEN_DAYS);
-        fine += days1 * 0.25;
+        fine += days1 * FIRST_FINE_RATE;
 
         // Days 8-14: $0.50/day
         if (numOfDays > SEVEN_DAYS) {
             int days2 = Math.min(numOfDays - SEVEN_DAYS, SEVEN_DAYS);
-            fine += days2 * 0.50;
+            fine += days2 * SECOND_FINE_RATE;
         }
 
         // Days 15+: $1.00/day
         if (numOfDays > FOURTEEN_DAYS) {
             int days3 = numOfDays - FOURTEEN_DAYS;
-            fine += days3 * 1.00;
+            fine += days3 * THIRD_FINE_RATE;
         }
 
         // Double rate for REFERENCE and TEXTBOOK
