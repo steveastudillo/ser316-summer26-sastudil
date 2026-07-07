@@ -391,7 +391,7 @@ public class Checkout {
             if (b.getType() != type) {
                 continue;
             }
-            if (!onlyAvailable && b.isAvailable()) {
+            if (!onlyAvailable || b.isAvailable()) {
                 looped++;;
             }
         }
